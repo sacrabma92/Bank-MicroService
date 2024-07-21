@@ -80,7 +80,7 @@ public class IAccountsServiceImpl implements IAccountsService {
         return customerDto;
     }
 
-    // Actualizar Cliente y la Cuenta asociada NO podra cambiar el numero de la cuenta
+    // Actualizar Cuenta y Cliente.NO podra cambiar el numero de la cuenta
     @Override
     public boolean updateAccount(CustomerDto customerDto) {
         boolean isUpdated = false;
@@ -108,5 +108,16 @@ public class IAccountsServiceImpl implements IAccountsService {
             isUpdated = true;
         }
         return isUpdated;
+    }
+
+    // Borrar cuenta.
+    @Override
+    public boolean deleteAccount(String mobileNumber) {
+        Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                ()-> new ResourceNotFoundException("Customer","mobileNumber", mobileNumber)
+        );
+        accountRepository.deleteByCustomerId(customer.getCustomerId());
+        customerRepository.deleteById(customer.getCustomerId());
+        return true;
     }
 }

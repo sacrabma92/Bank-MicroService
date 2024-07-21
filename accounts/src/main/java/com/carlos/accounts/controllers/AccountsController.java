@@ -50,4 +50,18 @@ public class AccountsController {
                     .body(new ReponseDto(StaticResponseHttp.STATUS_500, StaticResponseHttp.MESSAGE_500));
         }
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<ReponseDto> deleteAccountDetails(@RequestParam String mobileNumber){
+        boolean isDeleted = iAccountsService.deleteAccount(mobileNumber);
+        if(isDeleted){
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ReponseDto(StaticResponseHttp.STATUS_200, StaticResponseHttp.MESSAGE_200));
+        }else{
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ReponseDto(StaticResponseHttp.STATUS_500, StaticResponseHttp.MESSAGE_500));
+        }
+    }
 }
