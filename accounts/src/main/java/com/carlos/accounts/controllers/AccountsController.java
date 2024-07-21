@@ -3,6 +3,7 @@ package com.carlos.accounts.controllers;
 import com.carlos.accounts.constants.StaticResponseHttp;
 import com.carlos.accounts.dto.CustomerDto;
 import com.carlos.accounts.dto.ReponseDto;
+import com.carlos.accounts.entity.Accounts;
 import com.carlos.accounts.service.IAccountsService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,5 +35,19 @@ public class AccountsController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(customerDto);
+    }
+
+    @PutMapping("/updated")
+    public ResponseEntity<ReponseDto> updateAccountDetails(@RequestBody CustomerDto customerDto){
+        boolean isUpdated = iAccountsService.updateAccount(customerDto);
+        if(isUpdated){
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ReponseDto(StaticResponseHttp.STATUS_200, StaticResponseHttp.MESSAGE_200));
+        }else{
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ReponseDto(StaticResponseHttp.STATUS_500, StaticResponseHttp.MESSAGE_500));
+        }
     }
 }

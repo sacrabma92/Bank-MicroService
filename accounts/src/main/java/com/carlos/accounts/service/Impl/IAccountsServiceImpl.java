@@ -14,6 +14,7 @@ import com.carlos.accounts.repository.CustomerRepository;
 import com.carlos.accounts.service.IAccountsService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -59,7 +60,7 @@ public class IAccountsServiceImpl implements IAccountsService {
         return newAccount;
     }
 
-
+    // Buscar cliente por el numero del celular
     @Override
     public CustomerDto fetchAccount(String mobileNumber) {
         // Buscamos el cliente por number movil
@@ -77,5 +78,35 @@ public class IAccountsServiceImpl implements IAccountsService {
         // al DTO le estamos añadiendo la informacion de la cuenta que le pertenece
         customerDto.setAccountsDto(AccountsMapper.mapToAccountsDto(accounts, new AccountsDto()));
         return customerDto;
+    }
+
+    // Actualizar Cliente y la Cuenta asociada NO podra cambiar el numero de la cuenta
+    @Override
+    public boolean updateAccount(CustomerDto customerDto) {
+        boolean isUpdated = false;
+        // Almacenamos valores ingresado en una variable
+        AccountsDto accountsDto = customerDto.getAccountsDto();
+        // Si NO tienen datos arrojamos una exceptions
+        if(accountsDto != null){
+            Accounts accounts = accountRepository.findById(accountsDto.getAccountNumber()).orElseThrow(
+                    () -> new ResourceNotFoundException("Account","AccountNumber", accountsDto.getAccountNumber().toString())
+            );
+            // Pasamos de DTO a entity
+            AccountsMapper.mapToAccounts(accountsDto, accounts);
+            // Almacenamos losd atos en account
+            accounts = accountRepository.save(accounts);
+
+            // Traemos el usuario por id, sino existe arrojamos un error
+            Long customerId = accounts.getCustomerId();
+            Customer customer = customerRepository.findById(customerId).orElseThrow(
+                    () -> new ResourceNotFoundException("Customer","CustomerID", customerId.toString())
+            );
+            // Mapeamos de Dto a Entity
+            CustomerMapper.mapToCustomer(customerDto, customer);
+            // Almacenamos el cliente
+            customerRepository.save(customer);
+            isUpdated = true;
+        }
+        return isUpdated;
     }
 }
