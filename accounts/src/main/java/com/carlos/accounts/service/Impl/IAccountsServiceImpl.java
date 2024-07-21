@@ -36,8 +36,6 @@ public class IAccountsServiceImpl implements IAccountsService {
         if(optionalCustomer.isPresent()){
             throw new CustomerAlreadyException("Customer alredy registered with given mobileNumber "+customerDto.getMobileNumber());
         }
-        customer.setCreatedAt(LocalDateTime.now());
-        customer.setCreatedBy("Anonymous");
         // Almacenamos el cliente creado
         Customer savedCusteomer = customerRepository.save(customer);
         // Llamamos al metodo crear cuenta y lo guardamos.
@@ -55,8 +53,6 @@ public class IAccountsServiceImpl implements IAccountsService {
         newAccount.setAccountNumber(randomAccNumber);
         newAccount.setAccountType(StaticResponseHttp.SAVINGS);
         newAccount.setBranchAddress(StaticResponseHttp.ADDRESS);
-        newAccount.setCreatedAt(LocalDateTime.now());
-        newAccount.setCreatedBy("Anonymous");
         return newAccount;
     }
 
